@@ -1,0 +1,221 @@
+#pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTServo,  none)
+#pragma config(Sensor, S4,     light,          sensorLightActive)
+#pragma config(Motor,  mtr_S1_C1_1,     leftNush,      tmotorTetrix, openLoop, encoder)
+#pragma config(Motor,  mtr_S1_C1_2,     rightNush,     tmotorTetrix, openLoop, encoder)
+#pragma config(Motor,  mtr_S1_C2_1,     nushTake,      tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C2_2,     lanushearLift, tmotorTetrix, openLoop, encoder)
+#pragma config(Servo,  srvo_S1_C3_1,    servo1,               tServoNone)
+#pragma config(Servo,  srvo_S1_C3_2,    servo2,               tServoNone)
+#pragma config(Servo,  srvo_S1_C3_3,    box1,                 tServoStandard)
+#pragma config(Servo,  srvo_S1_C3_4,    box2,                 tServoStandard)
+#pragma config(Servo,  srvo_S1_C3_5,    gripper,              tServoStandard)
+#pragma config(Servo,  srvo_S1_C3_6,    servo6,               tServoNone)
+
+#include "JoystickDriver.c"
+
+int liftValue;
+int liftPower;
+int Start_Encoder;
+int EncoderSwagV2;
+int I = 0;
+int P;
+int error;
+//int ballsPassed = 0;
+//bool toggle = false;
+bool gripToggle = false;
+//bool ballPassing = false;
+bool boxToggle = false;
+bool intakeActive = true;//for ball counter, if used
+bool pressed1 = false;
+bool pressed2 = false;
+bool liftMode = true; //switch between manual and auto linear mode, true is auto, false is manual
+
+void initializerobot()
+{
+	motor[leftNush] = 0;
+	motor[rightNush] = 0;
+	motor[lanushearLift] = 0;
+	motor[nushTake] = 0;
+	nMotorEncoder[leftNush] = 0;
+	nMotorEncoder[rightNush] = 0;
+	nMotorEncoder[lanushearLift] = 0;
+	servo[gripper] = 0;
+	servo[box1] = 130;
+	servo[box2] = 0;
+}
+
+
+task main()
+{
+	waitForStart();
+	initializerobot();
+	Start_Encoder = nMotorEncoder[lanushearLift];
+	liftValue = Start_Encoder + 100;
+	while(true)
+	{
+		//driver 1 left joystick controls left train
+		if(joystick.joy1_y1 > 15 || joystick.joy1_y1 < -15)
+			{
+				motor[leftNush] = joystick.joy1_y1 * 100/128;
+			}
+			else
+			{
+				motor[leftNush] = 0;
+			}
+
+			//driver 1 right joystick controls right train
+			if(joystick.joy1_y2 > 15 || joystick.joy1_y2 < -15)
+			{
+				motor[rightNush] = joystick.joy1_y2 * 100/128;
+			}
+			else
+			{
+				motor[rightNush] = 0;
+			}
+
+			//driver 2 left joystick controls intake
+			if(intakeActive == true)
+			{
+				if(joystick.joy2_y1 > 15 || joystick.joy2_y1 < -15)
+				{
+					motor[nushTake] = joystick.joy2_y1 * 100/128;
+				}
+				else
+				{
+					motor[nushTake] = 0;
+				}
+			}
+	
+		//driver 2 right bumper toggles box open/ close
+			if(joy2Btn(6) == 1 && pressed1 == false)
+			{
+				pressed1 = true;
+				boxToggle = !boxToggle;
+			}
+			else if(joy2Btn(6) == 0)
+			{
+				pressed1 = false;
+			}
+			
+			//move servos based on toggle
+			if(boxToggle == true)
+			{
+				servo[box1] = 60;
+				servo[box2] = 235;
+			}
+			else 
+			{
+				servo[box1] = 130;
+				servo[box2] = 0;
+			}
+			
+			//driver 2 left bumper controls grip toggle
+			if(joy2Btn(5) == 1 && pressed2 == false)
+			{
+				pressed2 = true;
+				gripToggle = !gripToggle;
+			}
+			else if(joy2Btn(5) == 0)
+			{
+				pressed2 = false;
+			}
+			
+			//move servos based on toggle
+			if(gripToggle == true)
+			{
+				servo[gripper] = 160;
+			}
+			else
+			{
+				servo[gripper] = 0;
+			}
+	
+			// <copy pasta>
+			if(liftMode == true)
+			{
+				if(joy1Btn(1))
+				{
+					liftValue = Start_Encoder + 666; //hail satan, short
+					intakeActive = true;
+				}
+				else if(joy1Btn(2))
+				{
+					liftValue = Start_Encoder + 1332;// med, not tested
+					intakeActive = true;
+				}
+				else if(joy1Btn(3))
+				{
+					liftValue = Start_Encoder + 1998;//tall, not tested
+					intakeActive = true;
+				}
+				else if(joy1Btn(4))
+				{
+					liftValue = Start_Encoder + 2664;//high, not tested
+					intakeActive = true;
+				}
+				else if(joy1Btn(9))
+				{
+					liftValue = Start_Encoder;// reset full down
+					intakeActive = true;
+				}	
+				else if(joy1Btn(10))
+				{
+					liftValue = Start_Encoder + 100;// reset above small balls, not tested
+					intakeActive = true;
+				}
+	
+				EncoderSwagV2 = nMotorEncoder[lanushearLift]; // return of encoder swag
+	
+				error = liftValue - nMotorEncoder[lanushearLift]; //calculate the difference of target and actual values
+	
+				P = error; //lol useless
+	
+	
+				if (I + error < 10000 && I + error > -10000) // lol useless
+				{
+					I = I + error;
+				}
+	
+	
+				liftPower = (P/8 + I/2000); // lol useless
+	
+				if(error > 10)
+				{
+					motor[lanushearLift] = 100;
+				}
+				else if(error < -10)
+				{
+					motor[lanushearLift] = -15;
+				}
+				else
+				{
+					motor[lanushearLift] = 0;
+				}
+			}
+			else if(liftMode == false)
+			{
+				//manual
+				if(joystick.joy2_y2 > 15)
+				{
+					motor[lanushearLift] = 100;
+				}
+				else if(joystick.joy2_y2 < -15)
+				{
+						motor[lanushearLift] = -10;
+				}
+				else
+				{
+					motor[lanushearLift] = 0;
+				}
+			}
+			// </copy pasta>
+	
+	
+	
+	
+	
+	
+	}
+
+
+}
