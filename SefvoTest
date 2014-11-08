@@ -40,12 +40,15 @@ int preValue;
 int ballsPassed = 0;
 bool pressed1 = false;
 bool pressed2 = false;
+int lel;
+bool leel = false;
 
 task main()
 {
 	initializerobot();
 	while(true)
 	{
+			lel = nMotorEncoder[lanushearLift];
 
 			if(joystick.joy1_y1 > 15 || joystick.joy1_y1 < -15)
 			{
@@ -78,43 +81,67 @@ task main()
 			}
 
 
-			if(joy2Btn(1) == 1)
+			if(joy2Btn(1) == 1 && pressed1 == false)
+			{
+				pressed1 = true;
+				boxToggle = !boxToggle;
+			}
+			else if(joy2Btn(1) == 0)
+			{
+				pressed1 = false;
+			}
+
+			if(boxToggle == true)
 			{
 				servo[box1] = 60;
 				servo[box2] = 235;
 			}
-			else
+
+			if(boxToggle == false)
 			{
 				servo[box1] = 130;
 				servo[box2] = 0;
 			}
 
 
-			if(joy2Btn(2) == 1)
+			if(joy2Btn(2) == 1 && pressed2 == false)
+			{
+				pressed2 = true;
+				gripToggle = !gripToggle;
+			}
+			else if(joy2Btn(2) == 0)
+			{
+				pressed2 = false;
+			}
+
+			if(gripToggle == true)
 			{
 				servo[gripper] = 160;
 			}
-			else
+
+			if(gripToggle == false)
 			{
 				servo[gripper] = 0;
 			}
 
-			//if(joy2Btn(8) == 1)
-			//{
-			//	motor[lanushearLift] = 100;
-			//	intakeActive = true;
-			//}
-			//else if(joy2Btn(7) == 1)
-			//{
-			//	motor[lanushearLift] = -20;
-			//	intakeActive = true;
-			//}
-			//else
-			//{
-			//	motor[lanushearLift] = 0;
-			//}
 
-			nxtDisplayBigTextLine(3, "%d", nMotorEncoder[lanushearLift]);
+			if(joy2Btn(8) == 1)
+			{
+				motor[lanushearLift] = 100;
+				intakeActive = true;
+			}
+			else if(joy2Btn(7) == 1)
+			{
+				motor[lanushearLift] = -20;
+				intakeActive = true;
+			}
+			else
+			{
+				motor[lanushearLift] = 0;
+			}
+
+			nxtDisplayBigTextLine(3, "%d", lel);
+
 
 	}
 
