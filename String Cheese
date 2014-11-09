@@ -29,6 +29,7 @@ bool intakeActive = true;//for ball counter, if used
 bool pressed1 = false;
 bool pressed2 = false;
 bool liftMode = true; //switch between manual and auto linear mode, true is auto, false is manual
+string cheese;
 
 void initializerobot()
 {
