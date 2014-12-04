@@ -17,8 +17,6 @@
 
 #include "JoystickDriver.c"
 
-bool recieved = false;
-
 void anushalizerobot()
 {
 	motor[leftTrain] = 0;
@@ -61,35 +59,25 @@ int Drive(int Distance, int Lspeed, int Rspeed)
 	return Distance;
 }
 
-/*
-int Reverse(int Rdistance, int Rlspeed, int Rrspeed)
-{
-	while(nMotorEncoder[rightTrain] > Rdistance)
-	{
-		motor[leftTrain] = Rlspeed;
-		motor[rightTrain] = Rrspeed;
-	}
-
-	return Rdistance;
-}
-*/
-
 task main() //let us begin...
 {
 	anushalizerobot();
 	wait(500);
-
-	resetEncoders();
-
-	Reverse(-1000, -20, -20); //WILL move robot back inline with the "stick"
 	resetEncoders();
 	
-	Drive(1000, -20, 20); //WILL turn robot 90 degrees left
+//925 = approximate distance for one tile
+//3.533 tiles = distance on top of ramp
+	
+	Drive(2210, 20, 20); //WILL move robot forward inline with the "stick"
 	resetEncoders();
 	
-	Drive(1950, 30, 30); //WILL run robot into "stick"
+	Drive(1400, -20, 20); //WILL turn robot to face the "stick"
 	resetEncoders();
 	
+	Drive(725, 50, 50); //WILL run robot into "stick"
+	resetEncoders();
+	/*
 	Drive(1000, -30, -30); //WILL move robot back from the "stick"
-	resetEncoders();
+	resetEncoders(); 
+	*/
 }
