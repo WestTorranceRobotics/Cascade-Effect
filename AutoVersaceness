@@ -120,67 +120,43 @@ resetEncoders();
 */
 
 int x = 0;
+		while(x  < 10000)
+		{
+			servo[gripper1] = 0;
+			servo[gripper2] = 0;
+			x++;
+		}
 
-while(x < 10000)
-{
-servo[gripper1] = 0;
+		while(nMotorEncoder[leftLift] < 3600)
+		{
+			motor[leftLift] = motor[rightLift] = 100;
+		}
 
-servo[gripper2] = 0;
+		motor[leftLift] = motor[rightLift] = 0;
+		wait(50);
 
-x++;
-}
+		int y = 0;
+		while(y < 10000)
+		{
+			servo[box] = 160;
+			y++;
+		}
 
-while(nMotorEncoder[leftLift] < 3600)
-{
-motor[leftLift] = motor[rightLift] = 100;
-}
-motor[leftLift] = motor[rightLift] = 0;
-wait(50);
+		wait(1000);
 
-int y = 0;
+		while(y > 0)
+		{
+				servo[box] = 65;
+				y--;
+		}
+		wait(50);
+		
+		while(nMotorEncoder[leftLift] > 0)
+		{
+			motor[leftLift] = motor[rightLift] = -20;
+		}
 
-while(y < 10000)
-{
-servo[box] = 160;
-y++;
-}
-wait(1000);
 
-while(y > 0)
-{
-servo[box] = 65;
-
-y--;
-}
-}
-else
-{
-Drive(1, 30, 30);
-resetEncoders();
-
-Drive(0.8, -50, 50);
-resetEncoders();
-
-Drive(1, 30, 30);
-resetEncoders();
-
-Drive(-0.8, 50, -50);
-resetEncoders();
-
-IRPos = SensorValue[IR];
-
-if(IRPos == 5)
-{
-Drive(.5, 30, 30);
-resetEncoders();
-
-Drive(-0.3, 50, -50);
-resetEncoders();
-
-Drive(1.5, 80, 80);
-resetEncoders();
-}
-}
 }
 
 /*
