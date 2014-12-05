@@ -55,7 +55,7 @@ wait(250);
 
 int Drive(float tileDistance, int Lspeed, int Rspeed)
 {
-int Distance = 2500*tileDistance;
+int Distance = 925*tileDistance; //original: 2500
 while(abs(nMotorEncoder[rightTrain]) < abs(Distance))
 {
 motor[leftTrain] = Lspeed;
@@ -156,7 +156,6 @@ int x = 0;
 			motor[leftLift] = motor[rightLift] = -20;
 		}
 
-
 }
 
 /*
@@ -172,3 +171,4 @@ resetEncoders();
 Drive(500, -50, -50); //WILL move robot back from the "stick"
 resetEncoders();
 */
+}
