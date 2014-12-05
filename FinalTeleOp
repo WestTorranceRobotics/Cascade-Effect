@@ -1,8 +1,6 @@
 #pragma config(Hubs,  S1, HTServo,  HTMotor,  none,     none)
 #pragma config(Hubs,  S2, HTMotor,  HTMotor,  none,     none)
-#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
-#pragma config(Sensor, S2,     ,               sensorI2CMuxController)
-#pragma config(Sensor, S4,     light,          sensorLightActive)
+#pragma config(Sensor, S4,     touch,          sensorTouch)
 #pragma config(Motor,  mtr_S1_C2_1,     leftTrain,     tmotorTetrix, openLoop, reversed, encoder)
 #pragma config(Motor,  mtr_S1_C2_2,     leftLift,      tmotorTetrix, openLoop, reversed, encoder)
 #pragma config(Motor,  mtr_S2_C1_1,     rightLift,     tmotorTetrix, openLoop, encoder)
@@ -31,7 +29,7 @@ int errorR;
 int ballsPassed = 0;
 //int ballsPassed = 0; for ball counter if used
 //bool toggle = false;
-bool gripToggle = false;
+bool gripToggle = true;
 //bool ballPassing = false; for ball counter if used
 bool boxToggle = false;
 bool intakeActive = true;//for ball counter, if used
@@ -39,14 +37,20 @@ bool pressed1 = false;
 bool pressed2 = false;
 bool pressed3 = false;
 bool pressed4 = false;
+bool pressed5 = false;
+bool pressed6 = false;
 bool tamaki4lyfe = false;
 bool ballPassing = false;
 bool AntiSpazL = false;
 bool AntiSpazR = false;
 bool liftMode = true; //switch between manual and auto linear mode, true is auto, false is manual
 bool rampMode = false;
-int leftTrainPower;
-int rightTrainPower;
+bool zeroOn = true;
+bool setZero = false;
+bool zeroCom = false;
+bool resetLin = false;
+string cheese = "lol";
+
 
 void initializerobot()
 {
@@ -60,8 +64,8 @@ void initializerobot()
 	nMotorEncoder[leftLift] = 0;
 	nMotorEncoder[rightLift] = 0;
 	servo[gripper1] = 90;
-	servo[gripper2] = 135;
-	servo[box] = 80;
+	servo[gripper2] = 145;
+	servo[box] = 65;
 }
 
 
@@ -69,15 +73,15 @@ task main()
 {
 	waitForStart();
 	initializerobot();
-	
+
 	Start_Encoder = 0;
 	//liftValue = Start_Encoder + 100;//set box to above small balls, dont use yet
 	while(true)
 	{
 		//driver 1 left joystick controls left train
-		
+
 			//driver 1 right joystick controls right train
-		
+
 			if(joy1Btn(5))
 			{
 				if(abs(joystick.joy1_y2) < 15)
@@ -88,11 +92,11 @@ task main()
 				{
 					motor[rightTrain] = joystick.joy1_y2 * 100/384;
 				}
-				
+
 				if(abs(joystick.joy1_y1) < 15)
 				{
 					motor[leftTrain] = 0;
-				}	
+				}
 				else
 				{
 					motor[leftTrain] = joystick.joy1_y1 * 100/384;
@@ -108,11 +112,11 @@ task main()
 				{
 					motor[rightTrain] = joystick.joy1_y2 * 100/128;
 				}
-				
+
 				if(abs(joystick.joy1_y1) < 15)
 				{
 					motor[leftTrain] = 0;
-				}	
+				}
 				else
 				{
 					motor[leftTrain] = joystick.joy1_y1 * 100/128;
@@ -128,22 +132,22 @@ task main()
 				{
 					motor[rightTrain] = joystick.joy1_y2 * 200/384;
 				}
-				
+
 				if(abs(joystick.joy1_y1) < 15)
 				{
 					motor[leftTrain] = 0;
-				}	
+				}
 				else
 				{
 					motor[leftTrain] = joystick.joy1_y1 * 200/384;
 				}
 			}
-			
-			
-			
+
+
+
 			//driver 2 left joystick controls intake
 
-			if(abs(joystick.joy2_y1) < 15)
+			if(abs(joystick.joy2_y1) < 60)
 			{
 				motor[intake] = 0;
 			}
@@ -154,17 +158,21 @@ task main()
 
 
 		//driver 2 right bumper toggles box open/ close
-			if(joy2Btn(6) == 1 && pressed1 == false)
+			if(joy1Btn(8) == 1 && pressed1 == false)
 			{
 				pressed1 = true;
-				boxToggle = !boxToggle;
+				boxToggle = true;
 			}
-			else if(joy2Btn(6) == 0)
+			else if(joy1Btn(6) == 1 && pressed1 == false)
+			{
+				pressed1 = true;
+				boxToggle = false;
+			}
+			else if(!joy2Btn(8) && !joy2Btn(6))
 			{
 				pressed1 = false;
 			}
 
-			
 			//move servos based on toggle
 			if(boxToggle == true)//open
 			{
@@ -172,19 +180,25 @@ task main()
 			}
 			else //close
 			{
-				servo[box] = 80;
+				servo[box] = 65;
 			}
 
 			//driver 2 left bumper controls grip toggle
-			if(joy1Btn(6) == 1 && pressed2 == false)
+			if(joy1Btn(8) == 1 && pressed2 == false)
 			{
 				pressed2 = true;
-				gripToggle = !gripToggle;
+				gripToggle = true;
 			}
-			else if(joy1Btn(6) == 0)
+			else if(joy1Btn(6) == 1 && pressed2 == false)
+			{
+				pressed2 = true;
+				gripToggle = false;
+			}
+			else if(!joy1Btn(8) && !joy1Btn(6))
 			{
 				pressed2 = false;
 			}
+
 
 			//move servos based on toggle
 			if(gripToggle == true)//grip
@@ -195,19 +209,19 @@ task main()
 			else//release
 			{
 				servo[gripper1] = 90;
-				servo[gripper2] = 135;
+				servo[gripper2] = 145;
 			}
 
 			// <copy pasta>
 
-	nxtDisplayBigTextLine(3, "%d", nMotorEncoder[rightLift]);
-	
+
+
 				if(liftMode == true)
 				{
 					if(joy2Btn(2))
 					{
 						liftValue = Start_Encoder + 3500; //short
-						intakeActive = true;
+
 					}
 					else if(joy2Btn(3))
 					{
@@ -216,45 +230,42 @@ task main()
 					}
 					else if(joy2Btn(4))
 					{
-						liftValue = Start_Encoder + 11000;//tall
+						liftValue = Start_Encoder + 11500;//tall
 						intakeActive = true;
 					}
-					else if(joy2Btn(1))
+					else if(joy2Btn(7))
 					{
 						liftValue = Start_Encoder;//reset
 						intakeActive = true;
 					}
-					/*
-					else if(joy2Btn(10))
+					else if(joy2Btn(5))
 					{
-						liftValue = Start_Encoder + 14000;//high
+						liftValue = Start_Encoder + 500;//habove small balls
 						intakeActive = true;
-					}
-					else if(joy2Btn(9))
+					}/*
+					else if(joy1Btn(2))
 					{
-						liftValue = Start_Encoder;// reset full down
-						intakeActive = true;
-					}
-					else if(joy2Btn(10))
-					{
-						liftValue = Start_Encoder + 100;// reset above small balls
+						liftValue = Start_Encoder;//habove small balls
 						intakeActive = true;
 					}*/
+
 					if(joy2Btn(9) && pressed3 == false)
 						{
-							liftMode = !liftMode;
-							pressed3 = true
+							liftMode = false;
+							pressed3 = true;
 						}
-						else if(!joy2Btn(9)
+						else if(!joy2Btn(9))
 						{
-							pressed3 = false;	
+							pressed3 = false;
 						}
-						
-						
-						
+
+
+
+
 						if(errorL > 10 && AntiSpazL == false)
 						{
 							motor[leftLift] = 100;
+							motor[rightLift] = 100;
 						}
 						else if(errorL <= 10 && AntiSpazL == false)
 						{
@@ -263,10 +274,12 @@ task main()
 						else if(errorL > 100 && AntiSpazL == true)
 						{
 							motor[leftLift] = 100;
+							motor[rightLift] = 100;
 						}
 					  else if(errorL < -10 && AntiSpazL == false)
 						{
-							motor[leftLift] = -10;
+							motor[leftLift] = -20;
+							motor[rightLift] = -20;
 						}
 						else if(errorL >= -10 && AntiSpazL == false)
 						{
@@ -274,20 +287,15 @@ task main()
 						}
 						else if(errorL < -100 && AntiSpazL == true)
 						{
-							motor[leftLift] = -10;
+							motor[leftLift] = -20;
+							motor[rightLift] = -20;
 						}
 						else
 						{
-						//	if((EncoderSwagV2 - EncoderSwagV3) > 10)
-						//	{
-						//		motor[leftLift] = -5;
-						//	}
-						//	else
-						//	{	
-								motor[leftLift] = 0;
-						//	}
+							motor[leftLift] = 0;
+							motor[rightLift] = 0;
 						}
-						
+/*
 						if(errorR > 10 && AntiSpazR == false)
 						{
 							motor[rightLift] = 100;
@@ -302,7 +310,7 @@ task main()
 						}
 					  else if(errorR < -10 && AntiSpazR == false)
 						{
-							motor[rightLift] = -10;
+							motor[rightLift] = -20;
 						}
 						else if(errorR >= -10 && AntiSpazR == false)
 						{
@@ -310,7 +318,7 @@ task main()
 						}
 						else if(errorR < -100 && AntiSpazR == true)
 						{
-							motor[rightLift] = -10;
+							motor[rightLift] = -20;
 						}
 						else
 						{
@@ -319,36 +327,102 @@ task main()
 							//	motor[rightLift] = -5;
 							//}
 							//else
-							//{	
+							//{
 									motor[rightLift] = 0;
 						//	}
-						
+
 						 //little to no error, no movement
 						}
-					
+						*/
+						if(EncoderSwagV2 < 3000 && boxToggle == true)
+						{
+							boxToggle = false;
+						}
+
 					}
 					else
 					{
 						if(joy2Btn(9) && pressed3 == false)
 						{
-							liftMode = !liftMode;
-							pressed3 = true
+							liftMode = true;
+							pressed3 = true;
 						}
-						else if(!joy2Btn(9)
+						else if(!joy2Btn(9))
 						{
-							pressed3 = false;	
+							pressed3 = false;
 						}
-					
-						if(abs(joystick.joy2_y2) < 15)
+
+						if(joy2Btn(10) && pressed6 == false)
 						{
-							motor[leftLift] = motor[rightLift] = 0;	
+							zeroOn = !zeroOn;
+							pressed6 = true;
+						}
+						else if(!joy2Btn(10))
+						{
+							pressed6 = false;
+						}
+
+
+
+
+						if(zeroOn == true)
+						{
+
+							if(setZero == true)
+							{
+								nMotorEncoder[leftLift] = nMotorEncoder[rightLift] = 0;
+								setZero == false;
+							}
+
+							if((nMotorEncoder[leftLift] < 100) && joystick.joy2_y2 < 0)
+							{
+								motor[leftLift] = motor[rightLift] = 0;
+							}
+							else if((nMotorEncoder[leftLift] < 100) && joystick.joy2_y2 > 15)
+							{
+								motor[leftLift] = motor[rightLift] = joystick.joy2_y2;
+							}/*
+							if(SensorValue[touch] == 1 && joystick.joy2_y2 < 0)
+							{
+								motor[leftLift] = motor[rightLift] = 0;
+							}
+							else if(SensorValue[touch] == 1 && joystick.joy2_y2 > 15)
+							{
+								motor[leftLift] = motor[rightLift] = joystick.joy2_y2;
+							}*/
+							else if(abs(joystick.joy2_y2) < 15)
+							{
+								motor[leftLift] = motor[rightLift] = 0;
+							}
+							else
+							{
+								motor[leftLift] = motor[rightLift] = joystick.joy2_y2;
+							}
 						}
 						else
 						{
-							motor[leftLift] = motor[rightLift] = joystick.joy2_y2;	
+
+							if(abs(joystick.joy2_y2) < 15)
+							{
+								motor[leftLift] = motor[rightLift] = 0;
+							}
+							else
+							{
+								motor[leftLift] = motor[rightLift] = joystick.joy2_y2;
+							}
 						}
+
+						if(setZero == false)
+						{
+							setZero == true;
+						}
+
+						if(EncoderSwagV2 < 3000 && boxToggle == true)
+						{
+							boxToggle = false;
+						}
+
 					}
-					
 
 					EncoderSwagV2 = nMotorEncoder[leftLift]; // return of encoder swag
 					EncoderSwagV3 = nMotorEncoder[rightLift];
@@ -363,9 +437,9 @@ task main()
 					//{
 					//	I = I + error;
 					//}
-					
+
 					//liftPower = (P/5*8);
-					
+
 					/*
 					if(joy2Btn(8))
 					{
@@ -382,27 +456,27 @@ task main()
 						motor[leftLift] = 0;
 						motor[rightLift] = 0;
 					}
-		
+
 					if(EncoderSwagV2 < 0)
 					{
 						motor[leftLift] = 20;
 						motor[rightLift] = 20;
 					}
-					
+
 					if(EncoderSwagV3 < 0)
 					{
 						motor[leftLift] = 20;
 						motor[rightLift] = 20;
 					}
 					*/
-					
 
-				
-		
+
+
+
 
 			// </copy pasta>
 
-			
+
 //bump
 				/*
 		if(SensorValue[light] > 33 && ballPassing == false)
