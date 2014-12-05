@@ -64,20 +64,22 @@ task main() //let us begin...
 	anushalizerobot();
 	wait(500);
 	resetEncoders();
-	
+
 //925 = approximate distance for one tile
 //3.533 tiles = distance on top of ramp
-	
-	Drive(2210, 20, 20); //WILL move robot forward inline with the "stick"
+
+	Drive(3000, 30, 30); //WILL move robot forward inline with the "stick"
+	resetEncoders();
+
+	Drive(1100, -30, 30); //WILL turn robot to face the "stick"
+	resetEncoders();
+
+	Drive(1400, 100, 100); //WILL run robot into "stick"
 	resetEncoders();
 	
-	Drive(1400, -20, 20); //WILL turn robot to face the "stick"
+	Drive(500, -50, -50); //WILL move robot back from the "stick"
 	resetEncoders();
 	
-	Drive(725, 50, 50); //WILL run robot into "stick"
-	resetEncoders();
-	/*
-	Drive(1000, -30, -30); //WILL move robot back from the "stick"
-	resetEncoders(); 
-	*/
+	
+	
 }
