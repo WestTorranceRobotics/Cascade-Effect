@@ -52,7 +52,7 @@ void resetEncoders()
 
 int Drive(int Distance, int Lspeed, int Rspeed)
 {
-	while(nMotorEncoder[rightTrain] < Distance)
+	while(abs(nMotorEncoder[rightTrain]) < Distance)
 	{
 		motor[leftTrain] = Lspeed;
 		motor[rightTrain] = Rspeed;
@@ -61,26 +61,6 @@ int Drive(int Distance, int Lspeed, int Rspeed)
 	return Distance;
 }
 
-int Reverse(int Rdistance, int Rlspeed, int Rrspeed)
-{
-	while(nMotorEncoder[rightTrain] > Rdistance)
-	{
-		motor[leftTrain] = Rlspeed;
-		motor[rightTrain] = Rrspeed;
-	}
-
-	return Rdistance;
-}
-
-int Turn(int turnDistance, int turnRate)
-{
-	while(nMotorEncoder[rightTrain] < turnDistance)
-	{
-		motor[rightTrain] = turnRate;
-		motor[leftTrain] = -turnRate;
-	}
-	return turnDistance;
-}
 
 task main()
 {
@@ -88,11 +68,12 @@ task main()
 	anushalizerobot();
 	wait(500);
 
-	//Reverse(-1800, -5, -10);
 
+
+	Drive(-1800, -20, -20);
 	resetEncoders();
 
-	Reverse(-1300, -10, -30);
+	Drive(-1300, -50, -50);
 	resetEncoders();
 
 
@@ -103,14 +84,14 @@ task main()
 		x++;
 	}
 
-	while(nMotorEncoder[LinearLift] < 1800)
+	while(nMotorEncoder[LinearLift] < 7600)
 	{
 		nxtDisplayBigTextLine(3, "%d", nMotorEncoder[LinearLift]);
 		motor[LinearLift] = 100;
 	}
 
 	motor[LinearLift] = 0;
-	wait(250);
+	wait(50);
 
 	int y = 0;
 	while(y < 10000)
@@ -127,20 +108,20 @@ task main()
 		y--;
 	}
 
-	while(nMotorEncoder[LinearLift] > 750)
+	while(nMotorEncoder[LinearLift] > 3500)
 	{
 		nxtDisplayBigTextLine(3, "%d", nMotorEncoder[LinearLift]);
-		motor[LinearLift] = -15;
+		motor[LinearLift] = -20;
 	}
 	resetEncoders();
 
-	Drive(500, 30, 25);
+	Drive(500, 30, 30);
 	resetEncoders();
 
 	Drive(1000, -80, 80);
 	resetEncoders();
 
-	Reverse(-200, -10, -30);
+	Drive(-200, -30, -30);
 	resetEncoders();
 
 	while(x > 0)
@@ -152,10 +133,10 @@ task main()
 	Drive(200, 30, 40);
 	resetEncoders();
 
-	Reverse(-400, 80 , -80);
+	Drive(-400, 80 , -80);
 	resetEncoders();
 
-	Reverse(-2000, -10, -100);
+	Drive(-2000, -10, -100);
 	resetEncoders();
 
 	while(x  < 10000)
@@ -164,7 +145,7 @@ task main()
 		x++;
 	}
 
-	while(nMotorEncoder[LinearLift] < 2000)
+	while(nMotorEncoder[LinearLift] < 11600)
 	{
 		motor[LinearLift] = 100;
 	}
@@ -187,26 +168,19 @@ task main()
 	y--;
 	}
 
-//	Reverse(-500, 50, -50);
-
-
-
-
-
-
-	/*
-
 	while(nMotorEncoder[LinearLift] > 0)
 	{
-		motor[LinearLift] = -15;
+		motor[LinearLift] = -20;
 	}
 
+	Drive(900, 50, 50);
 	resetEncoders();
 
-	motor[leftTrain] = 100;
-	wait1Msec(1500);
+	Drive(-300, 25, -25);
+	resetEncoders();
 
-	Drive(1000, 20, 40);
+	Drive(3000, 50, 50);
+	resetEncoders();
 
-*/
+
 }
