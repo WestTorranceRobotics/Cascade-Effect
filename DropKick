@@ -47,12 +47,12 @@ void resetEncoders()
 {
 	motor[leftTrain] = 0;
 	motor[rightTrain] = 0;
-//	motor[leftLift] = 0;
-//	motor[rightLift] = 0;
+	motor[leftLift] = 0;
+	motor[rightLift] = 0;
 	nMotorEncoder[leftTrain] = 0;
 	nMotorEncoder[rightTrain] = 0;
-	//nMotorEncoder[leftLift] = 0;
-	//nMotorEncoder[rightLift] = 0;
+	nMotorEncoder[leftLift] = 0;
+	nMotorEncoder[rightLift] = 0;
 	wait(250);
 }
 
