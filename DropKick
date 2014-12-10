@@ -20,7 +20,7 @@
 
 #include "JoystickDriver.c"
 
-bool recieved = false;
+
 
 void anushalizerobot()
 {
@@ -106,31 +106,31 @@ task main()
 		Drive(1.5, 30, 30);
 		resetEncoders();
 
-		Drive(-0.8, 50, -50);
+		Drive(-0.82, 50, -50);
 		resetEncoders();
 
-		Drive(1, 30, 30);
+		Drive(1.2, 30, 30);
 		resetEncoders();
 
-		Drive(0.8, -50, 50);
+		Drive(0.815, -50, 50);
 		resetEncoders();
 
 		Drive(1.6, 80, 80);
 		resetEncoders();
 
-		Drive(-0.5, -50, -50);
+		Drive(-0.9, -30, -30);
 		resetEncoders();
 
-		Drive(-0.8, 50, -50);
+		Drive(-0.9, 50, -50);
 		resetEncoders();
 
-		Drive(0.6, 30, 30);
+		Drive(0.55, 30, 30);
 		resetEncoders();
 
-		Drive(-0.8, 50, -50);
+		Drive(-1.2, 50, -50);
 		resetEncoders();
 
-		Drive(-3, -50, -50);
+		Drive(-3.1, -50, -50);
 		resetEncoders();
 
 		int x = 0;
@@ -165,7 +165,7 @@ task main()
 		}
 		wait(50);
 		
-		while(nMotorEncoder[leftLift] > 0)
+		while(nMotorEncoder[leftLift] > -200)
 		{
 			motor[leftLift] = motor[rightLift] = -20;
 		}
@@ -276,44 +276,44 @@ task main()
 		resetEncoders();
 		
 		int x = 0;
-			while(x  < 10000)
-			{
-				servo[gripper1] = 0;
-				servo[gripper2] = 0;
-				x++;
-			}
+		while(x  < 10000)
+		{
+			servo[gripper1] = 0;
+			servo[gripper2] = 0;
+			x++;
+		}
 
-			while(nMotorEncoder[leftLift] < 3600)
-			{
-				motor[leftLift] = motor[rightLift] = 100;
-			}
+		while(nMotorEncoder[leftLift] < 3600)
+		{
+			motor[leftLift] = motor[rightLift] = 100;
+		}
 
-			motor[leftLift] = motor[rightLift] = 0;
-			wait(50);
+		motor[leftLift] = motor[rightLift] = 0;
+		wait(50);
 
-			int y = 0;
-			while(y < 10000)
-			{
-				servo[box] = 160;
-				y++;
-			}
+		int y = 0;
+		while(y < 10000)
+		{
+			servo[box] = 160;
+			y++;
+		}
 
-			wait(1000);
+		wait(1000);
 
-			while(y > 0)
-			{
-				servo[box] = 65;
-				y--;
-			}
-	
-			wait(50);
+		while(y > 0)
+		{
+			servo[box] = 65;
+			y--;
+		}
+
+		wait(50);
+		
+		while(nMotorEncoder[leftLift] > 0)
+		{
+			motor[leftLift] = motor[rightLift] = -20;
+		}
 			
-			while(nMotorEncoder[leftLift] > 0)
-			{
-				motor[leftLift] = motor[rightLift] = -20;
-			}
-				
-			resetEncoders();
+		resetEncoders();
 	}
 
 
