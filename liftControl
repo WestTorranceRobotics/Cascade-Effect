@@ -1,0 +1,41 @@
+#pragma config(Hubs,  S1, HTServo,  HTMotor,  none,     none)
+#pragma config(Hubs,  S2, HTMotor,  HTMotor,  none,     none)
+#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
+#pragma config(Sensor, S2,     ,               sensorI2CMuxController)
+#pragma config(Sensor, S4,     touch,          sensorTouch)
+#pragma config(Motor,  mtr_S1_C2_1,     leftTrain,     tmotorTetrix, openLoop, reversed, encoder)
+#pragma config(Motor,  mtr_S1_C2_2,     leftLift,      tmotorTetrix, openLoop, reversed, encoder)
+#pragma config(Motor,  mtr_S2_C1_1,     rightLift,     tmotorTetrix, openLoop, encoder)
+#pragma config(Motor,  mtr_S2_C1_2,     intake,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S2_C2_1,     rightTrain,    tmotorTetrix, openLoop, encoder)
+#pragma config(Motor,  mtr_S2_C2_2,     motorI,        tmotorTetrix, openLoop)
+#pragma config(Servo,  srvo_S1_C1_1,    gripper1,             tServoStandard)
+#pragma config(Servo,  srvo_S1_C1_2,    gripper2,             tServoStandard)
+#pragma config(Servo,  srvo_S1_C1_3,    box,                  tServoStandard)
+#pragma config(Servo,  srvo_S1_C1_4,    servo4,               tServoNone)
+#pragma config(Servo,  srvo_S1_C1_5,    servo5,               tServoNone)
+#pragma config(Servo,  srvo_S1_C1_6,    servo6,               tServoNone)
+
+task main()
+{
+	while(true)
+	{
+		if(nNxtButtonPressed == 2)
+		{
+			motor[leftLift] = 100;
+			motor[rightLift] = 100;	
+		}
+		else if(nNxtButtonPressed == 1)
+		{
+			motor[leftLift] = -20;
+			motor[rightLift] = -20;	
+		}
+		else 
+		{
+			motor[leftLift] = 0;
+			motor[rightLift] = 0;	
+		}
+	}
+
+
+}
